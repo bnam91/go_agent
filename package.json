@@ -1,0 +1,13 @@
+{
+  "name": "module_telegram",
+  "version": "1.0.0",
+  "description": "Telegram Bot 모듈",
+  "main": "telegram_main.js",
+  "scripts": {
+    "start": "node telegram_main.js",
+    "read": "node telegram_main.js read",
+    "send": "node telegram_main.js send",
+    "log": "node telegram_main.js log",
+    "log:unlock": "node -e \"const p=require('path').join(process.cwd(),'.telegram_log.lock'); require('fs').existsSync(p)&&require('fs').unlinkSync(p); console.log('락 해제됨')\""
+  }
+}
