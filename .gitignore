@@ -1,5 +1,4 @@
-# 환경 설정 (토큰 포함 - 절대 커밋하지 마세요)
-config.js
+# 환경 설정
 config.local.js
 
 # Node

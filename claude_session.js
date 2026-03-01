@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Claude 대화 세션 관리
- * - chatId별 대화 기록 저장 (파일)
+ * - 봇별·chatId별 대화 기록 저장 (sessions/<봇명>/<chatId>.json)
  * - claude -p로 대화 이어가기
  * - --dangerously-skip-permissions: 텔레그램에서 도구 실행 시 승인 없이 실행 (사용자 요청)
  */
@@ -14,20 +14,36 @@ const SESSIONS_DIR = path.join(__dirname, 'sessions');
 const MAX_MESSAGES = 20; // 최근 10턴 유지
 const CLAUDE_PROMPT_PREFIX = `다음은 User와 Assistant의 대화입니다. 마지막 User 메시지에 대한 Assistant 응답만 작성하세요. (인사, 설명 등 불필요한 말 없이 본문만)\n\n`;
 
-function ensureSessionsDir() {
-  if (!fs.existsSync(SESSIONS_DIR)) {
-    fs.mkdirSync(SESSIONS_DIR, { recursive: true });
+function ensureSessionsDir(dir) {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
   }
 }
 
-function getSessionPath(chatId) {
-  ensureSessionsDir();
-  return path.join(SESSIONS_DIR, `${chatId}.json`);
+function getSessionPath(chatId, botName = 'agent') {
+  const botDir = path.join(SESSIONS_DIR, String(botName));
+  ensureSessionsDir(botDir);
+  return path.join(botDir, `${chatId}.json`);
 }
 
-function loadSession(chatId) {
-  const p = getSessionPath(chatId);
-  if (!fs.existsSync(p)) return null;
+function loadSession(chatId, botName = 'agent') {
+  const p = getSessionPath(chatId, botName);
+  if (!fs.existsSync(p)) {
+    // 기존 sessions/<chatId>.json → sessions/agent/<chatId>.json 마이그레이션
+    const legacyPath = path.join(SESSIONS_DIR, `${chatId}.json`);
+    if (botName === 'agent' && fs.existsSync(legacyPath)) {
+      try {
+        const data = fs.readFileSync(legacyPath, 'utf8');
+        ensureSessionsDir(path.join(SESSIONS_DIR, 'agent'));
+        fs.writeFileSync(p, data, 'utf8');
+        fs.unlinkSync(legacyPath);
+      } catch {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
   try {
     const data = JSON.parse(fs.readFileSync(p, 'utf8'));
     return data.messages || [];
@@ -36,8 +52,8 @@ function loadSession(chatId) {
   }
 }
 
-function saveSession(chatId, messages) {
-  const p = getSessionPath(chatId);
+function saveSession(chatId, messages, botName = 'agent') {
+  const p = getSessionPath(chatId, botName);
   const trimmed = messages.slice(-MAX_MESSAGES);
   fs.writeFileSync(
     p,
@@ -46,13 +62,21 @@ function saveSession(chatId, messages) {
   );
 }
 
-function clearSession(chatId) {
-  const p = getSessionPath(chatId);
+function clearSession(chatId, botName = 'agent') {
+  const p = getSessionPath(chatId, botName);
   if (fs.existsSync(p)) fs.unlinkSync(p);
 }
 
-function hasSession(chatId) {
-  return fs.existsSync(getSessionPath(chatId));
+function hasSession(chatId, botName = 'agent') {
+  const p = getSessionPath(chatId, botName);
+  if (fs.existsSync(p)) return true;
+  // 기존 sessions/<chatId>.json 마이그레이션 (loadSession에서 처리)
+  const legacyPath = path.join(SESSIONS_DIR, `${chatId}.json`);
+  if (botName === 'agent' && fs.existsSync(legacyPath)) {
+    loadSession(chatId, botName); // 마이그레이션 수행
+    return true;
+  }
+  return false;
 }
 
 function formatPromptForClaude(messages, newUserMessage) {

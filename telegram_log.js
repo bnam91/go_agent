@@ -260,22 +260,22 @@ async function run(args = []) {
         }
 
         // Claude 세션: /종료 → 대화 종료
-        if (claudeSession.hasSession(msg.chatId) && msg.text.trim() === SESSION_END_TRIGGER) {
-          claudeSession.clearSession(msg.chatId);
+        if (claudeSession.hasSession(msg.chatId, botName) && msg.text.trim() === SESSION_END_TRIGGER) {
+          claudeSession.clearSession(msg.chatId, botName);
           await sendMessage(bot.token, msg.chatId, 'Claude 대화가 종료되었습니다.');
           logToFile(`[세션 종료] ${msg.chatId}`, botName);
           continue;
         }
 
         // Claude 세션 중: 모든 메시지를 Claude로 전달
-        if (claudeSession.hasSession(msg.chatId)) {
+        if (claudeSession.hasSession(msg.chatId, botName)) {
           logToFile(`[Claude 처리 중] ${msg.chatId}`, botName);
           try {
-            const messages = claudeSession.loadSession(msg.chatId) || [];
+            const messages = claudeSession.loadSession(msg.chatId, botName) || [];
             const replyText = await claudeSession.runClaude(messages, msg.text);
             messages.push({ role: 'user', content: msg.text });
             messages.push({ role: 'assistant', content: replyText });
-            claudeSession.saveSession(msg.chatId, messages);
+            claudeSession.saveSession(msg.chatId, messages, botName);
             const MAX_LEN = 4096;
             for (let i = 0; i < replyText.length; i += MAX_LEN) {
               const chunk = replyText.slice(i, i + MAX_LEN);
@@ -299,7 +299,7 @@ async function run(args = []) {
               const replyText = await claudeSession.runClaude(messages, firstMsg);
               messages.push({ role: 'user', content: firstMsg });
               messages.push({ role: 'assistant', content: replyText });
-              claudeSession.saveSession(msg.chatId, messages);
+              claudeSession.saveSession(msg.chatId, messages, botName);
               const MAX_LEN = 4096;
               for (let i = 0; i < replyText.length; i += MAX_LEN) {
                 const chunk = replyText.slice(i, i + MAX_LEN);
@@ -311,7 +311,7 @@ async function run(args = []) {
               await sendMessage(bot.token, msg.chatId, `오류: ${e.message}`);
             }
           } else {
-            claudeSession.saveSession(msg.chatId, []);
+            claudeSession.saveSession(msg.chatId, [], botName);
             await sendMessage(
               bot.token,
               msg.chatId,
