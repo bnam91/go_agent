@@ -8,6 +8,10 @@
     "read": "node telegram_main.js read",
     "send": "node telegram_main.js send",
     "log": "node telegram_main.js log",
-    "log:unlock": "node -e \"const p=require('path').join(process.cwd(),'.telegram_log.lock'); require('fs').existsSync(p)&&require('fs').unlinkSync(p); console.log('락 해제됨')\""
+    "log:finder": "node telegram_main.js log finder",
+    "log:agent": "node telegram_main.js log agent",
+    "log:mini004": "node telegram_main.js log mini004",
+    "log:imac": "node telegram_main.js log imac",
+    "log:unlock": "node scripts/unlock.js"
   }
 }

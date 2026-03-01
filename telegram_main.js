@@ -77,6 +77,7 @@ async function main() {
     await cmdSend(args);
   } else if (cmd === 'log') {
     const { run } = require('./telegram_log.js');
+    // args: [봇명, 필터...] 또는 [--bot=봇명, 필터...] 예: log finder, log agent keyword
     await run(args);
   } else if (!cmd) {
     // 대화형 모드
@@ -89,7 +90,11 @@ async function main() {
       await cmdRead();
     } else if (choice === '3') {
       const { run } = require('./telegram_log.js');
-      await run([]);
+      const botKeys = Object.keys(config.bots);
+      console.log('봇:', botKeys.join(', '));
+      const botChoice = await question(`실행할 봇 (기본: ${config.selectedBot}): `);
+      const botName = botChoice.trim() || config.selectedBot;
+      await run([botName]);
     } else if (choice === '2') {
       const bot = config.getBot();
       const users = bot.users || {};

@@ -9,7 +9,9 @@ npm-debug.log*
 # 로그
 *.log
 log.txt
+log.*.txt
 .telegram_log.lock
+.telegram_log.*.lock
 sessions/
 .env
 .env.local
