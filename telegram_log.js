@@ -238,6 +238,7 @@ async function run(filters = []) {
 
         // Claude 세션 중: 모든 메시지를 Claude로 전달
         if (claudeSession.hasSession(msg.chatId)) {
+          logToFile(`[Claude 처리 중] ${msg.chatId}`);
           try {
             const messages = claudeSession.loadSession(msg.chatId) || [];
             const replyText = await claudeSession.runClaude(messages, msg.text);

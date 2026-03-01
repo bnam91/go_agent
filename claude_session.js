@@ -65,6 +65,8 @@ function formatPromptForClaude(messages, newUserMessage) {
   return lines.join('');
 }
 
+const CLAUDE_TIMEOUT_MS = 120 * 1000; // 120초
+
 function runClaude(messages, newUserMessage) {
   const prompt = formatPromptForClaude(messages, newUserMessage);
   return new Promise((resolve, reject) => {
@@ -74,10 +76,21 @@ function runClaude(messages, newUserMessage) {
 
     let stdout = '';
     let stderr = '';
+    let settled = false;
     child.stdout.on('data', (chunk) => (stdout += chunk.toString()));
     child.stderr.on('data', (chunk) => (stderr += chunk.toString()));
 
+    const timeoutId = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      child.kill('SIGTERM');
+      reject(new Error(`타임아웃 (${CLAUDE_TIMEOUT_MS / 1000}초)`));
+    }, CLAUDE_TIMEOUT_MS);
+
     child.on('close', (code) => {
+      clearTimeout(timeoutId);
+      if (settled) return;
+      settled = true;
       const output = stdout.trim();
       if (code !== 0) {
         reject(new Error(stderr || `claude 종료 코드: ${code}`));
@@ -85,7 +98,13 @@ function runClaude(messages, newUserMessage) {
         resolve(output || '(응답 없음)');
       }
     });
-    child.on('error', reject);
+    child.on('error', (err) => {
+      clearTimeout(timeoutId);
+      if (!settled) {
+        settled = true;
+        reject(err);
+      }
+    });
   });
 }
 
