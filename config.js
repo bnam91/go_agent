@@ -13,7 +13,7 @@ module.exports = {
       description: 'Claude 대화, 코드 실행 등 에이전트용',
       token: '8702727796:AAFEGeQulDaWoUmCAEaTHpCFCXaPb2_jJuo',
       username: 'gogo_agent_bot',
-      skillsDir: 'skills/agent',
+      skillsDir: 'skills',
       users: {
         6942656480: '현빈'
       },
@@ -21,7 +21,7 @@ module.exports = {
       description: '유튜브 채널 분석, 레퍼24 등 검색/조회용',
       token: '7849782487:AAEp6gwgun05PAH3Q7VSFbZ4D9-f4gga_qo',
       username: 'gogo_finder_bot',
-      skillsDir: 'skills/finder',
+      skillsDir: 'skills',
       users: {
         6942656480: '현빈',
         8406936211: '지수',
@@ -31,7 +31,7 @@ module.exports = {
       description: '미니PC 004 전용 (윈도우)',
       token: '8685844376:AAGlP0ovCKQK3SC0rIa_rYEYX2fTPzDt2XY',
       username: 'gogo_mini_004_bot',
-      skillsDir: 'skills/mini004',
+      skillsDir: 'skills',
       users: {
         6942656480: '현빈',
         8406936211: '지수',
@@ -41,7 +41,7 @@ module.exports = {
       description: 'iMac 전용',
       token: '8739714301:AAGPKkzMyhnsBkuXd9MDVVsL-Kp_Vuky71k',
       username: 'gogo_imac_bot',
-      skillsDir: 'skills/imac',
+      skillsDir: 'skills',
       users: {},
     },
   },

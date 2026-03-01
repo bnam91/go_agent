@@ -79,14 +79,20 @@ const HELP_TRIGGER = '/?';
 const SESSION_END_TRIGGER = '/종료';
 const CLAUDE_SESSION_TRIGGER = '/클로드코드';
 
-function buildHelpMessage(skills) {
-  if (skills.length === 0) return '등록된 트리거가 없습니다.';
-  const lines = ['📋 등록된 트리거와 설명\n\n'];
-  for (const s of skills) {
-    const desc = s.description || '(설명 없음)';
-    lines.push(`📌 ${s.trigger}\n${desc}\n\n`);
+const CLAUDE_COMMANDS_DIR = path.join(os.homedir(), '.claude', 'commands');
+
+function buildHelpMessage() {
+  const dir = CLAUDE_COMMANDS_DIR;
+  if (!fs.existsSync(dir)) {
+    return `📋 ~/.claude/commands 폴더가 없습니다.\n\n등록된 트리거: /분석, /레퍼24, /클로드코드`;
   }
-  return lines.join('').trimEnd();
+  const files = fs.readdirSync(dir).filter((f) => !f.startsWith('.'));
+  if (files.length === 0) {
+    return '📋 ~/.claude/commands 폴더가 비어 있습니다.';
+  }
+  const lines = ['📋 ~/.claude/commands 파일 목록\n\n'];
+  lines.push(files.sort().map((f) => `• ${f}`).join('\n'));
+  return lines.join('');
 }
 
 function getMatchedSkill(text, skills) {
@@ -262,7 +268,7 @@ async function run(args = []) {
         logToFile(line, botName);
 
         if (msg.text.trim() === HELP_TRIGGER && msg.chatId) {
-          const helpText = buildHelpMessage(skills);
+          const helpText = buildHelpMessage();
           await sendMessage(bot.token, msg.chatId, helpText);
           logToFile(`[답장] ${msg.chatId}: [도움말]`, botName);
           continue;
