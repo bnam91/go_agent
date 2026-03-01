@@ -7,7 +7,7 @@ module.exports = {
   description: '레퍼 채널들 중 최근 24시간 동안 업로드된 영상 목록 조회',
   schedule: { time: '09:00', chatId: 8406936211 },
   action: {
-    script: '/Users/a1/github/dev_youtube/scripts/indicator_day.js',
+    script: '~/Documents/github_skills/dev_youtube/scripts/indicator_day.js',
     allowEmptyArgs: true,
   },
 };

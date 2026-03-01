@@ -8,7 +8,7 @@ module.exports = {
   trigger: '/분석',
   description: ' 최근 업로드 영상 8개 조회 👉 /분석 + @채널아이디 혹은 채널명, URL 입력 (*여러 검색 결과 시: /분석 채널명 2 (번호 선택 후 재조회)',
   action: {
-    script: '/Users/a1/github/dev_youtube/scripts/indicator.js',
+    script: '~/Documents/github_skills/dev_youtube/scripts/indicator.js',
     args: (trigger, fullText) => {
       const rest = fullText.replace(trigger, '').trim();
       if (!rest) return [];

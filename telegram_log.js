@@ -11,7 +11,16 @@
  */
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
+
+function expandPath(p) {
+  if (typeof p !== 'string') return p;
+  if (p.startsWith('~/') || p === '~') {
+    return path.join(os.homedir(), p.slice(1));
+  }
+  return p;
+}
 const config = require('./config.js');
 const { getUpdates } = require('./telegram_read.js');
 const { sendMessage } = require('./telegram_send.js');
@@ -90,7 +99,7 @@ async function getReplyFromSkill(text, skill) {
   if (!skill.action?.script) return null;
 
   const { spawn } = require('child_process');
-  const scriptPath = skill.action.script;
+  const scriptPath = expandPath(skill.action.script);
   const argsFn = skill.action.args || (() => []);
   const args = argsFn(skill.trigger, text);
 
