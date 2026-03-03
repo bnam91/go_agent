@@ -81,16 +81,20 @@ const CLAUDE_SESSION_TRIGGER = '/클로드코드';
 
 const CLAUDE_COMMANDS_DIR = path.join(os.homedir(), '.claude', 'commands');
 
-function buildHelpMessage() {
-  const dir = CLAUDE_COMMANDS_DIR;
+function buildHelpMessage(bot) {
+  const dir = bot?.commandsDir ? expandPath(bot.commandsDir) : CLAUDE_COMMANDS_DIR;
   if (!fs.existsSync(dir)) {
-    return `📋 ~/.claude/commands 폴더가 없습니다.\n\n등록된 트리거: /분석, /레퍼24, /클로드코드`;
+    return `📋 commands 폴더가 없습니다.\n\n등록된 트리거: /분석, /클로드코드`;
   }
-  const files = fs.readdirSync(dir).filter((f) => !f.startsWith('.'));
+  let files = fs.readdirSync(dir).filter((f) => !f.startsWith('.'));
+  const filter = bot?.commandsFilter;
+  if (filter && Array.isArray(filter) && filter.length > 0) {
+    files = files.filter((f) => filter.some((kw) => f.toLowerCase().includes(kw.toLowerCase())));
+  }
   if (files.length === 0) {
-    return '📋 ~/.claude/commands 폴더가 비어 있습니다.';
+    return '📋 표시할 명령이 없습니다.';
   }
-  const lines = ['📋 ~/.claude/commands 파일 목록\n\n'];
+  const lines = ['📋 명령 목록\n\n'];
   lines.push(files.sort().map((f) => `• ${f}`).join('\n'));
   return lines.join('');
 }
@@ -268,7 +272,7 @@ async function run(args = []) {
         logToFile(line, botName);
 
         if (msg.text.trim() === HELP_TRIGGER && msg.chatId) {
-          const helpText = buildHelpMessage();
+          const helpText = buildHelpMessage(bot);
           await sendMessage(bot.token, msg.chatId, helpText);
           logToFile(`[답장] ${msg.chatId}: [도움말]`, botName);
           continue;

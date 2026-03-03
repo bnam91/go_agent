@@ -1,9 +1,9 @@
 /**
  * Telegram Bot 설정
- * ⚠️ config.js는 .gitignore에 포함되어 있으므로 Git에 커밋되지 않습니다.
  *
- * 봇별 skillsDir: 해당 봇이 사용할 스킬 폴더
- * 실행: npm run log:finder, npm run log:agent (프로세스 분리)
+ * 봇별 skillsDir: 스킬 폴더
+ * commandsFilter: /? 시 표시할 명령 필터 (파일명에 키워드 포함). []면 전체 표시
+ * commandsDir: ~/.claude/commands 대신 사용할 경로 (선택)
  */
 
 module.exports = {
@@ -14,14 +14,17 @@ module.exports = {
       token: '8702727796:AAFEGeQulDaWoUmCAEaTHpCFCXaPb2_jJuo',
       username: 'gogo_agent_bot',
       skillsDir: 'skills',
+      commandsFilter: [], // 비어있으면 전체 표시
       users: {
         6942656480: '현빈'
       },
-    },finder: {
+    },
+    finder: {
       description: '유튜브 채널 분석, 레퍼24 등 검색/조회용',
       token: '7849782487:AAEp6gwgun05PAH3Q7VSFbZ4D9-f4gga_qo',
       username: 'gogo_finder_bot',
       skillsDir: 'skills',
+      commandsFilter: [], // 파일명에 포함된 키워드로 필터
       users: {
         6942656480: '현빈',
         8406936211: '지수',
@@ -32,9 +35,11 @@ module.exports = {
       token: '8685844376:AAGlP0ovCKQK3SC0rIa_rYEYX2fTPzDt2XY',
       username: 'gogo_mini_004_bot',
       skillsDir: 'skills',
+      commandsFilter: [],
       users: {
         6942656480: '현빈',
         8406936211: '지수',
+        8692328694: '수지',
       },
     },
     imac: {
@@ -42,6 +47,7 @@ module.exports = {
       token: '8739714301:AAGPKkzMyhnsBkuXd9MDVVsL-Kp_Vuky71k',
       username: 'gogo_imac_bot',
       skillsDir: 'skills',
+      commandsFilter: [], // 비어있으면 전체 표시
       users: {},
     },
   },
