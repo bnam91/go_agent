@@ -12,7 +12,7 @@ const { spawn } = require('child_process');
 
 const SESSIONS_DIR = path.join(__dirname, 'sessions');
 const MAX_MESSAGES = 20; // 최근 10턴 유지
-const CLAUDE_PROMPT_PREFIX = `다음은 User와 Assistant의 대화입니다. 마지막 User 메시지에 대한 Assistant 응답만 작성하세요. (인사, 설명 등 불필요한 말 없이 본문만)\n\n`;
+const CLAUDE_PROMPT_PREFIX = `다음은 User와 Assistant의 대화입니다. 마지막 User 메시지에 대한 Assistant 응답만 작성하세요. (인사, 설명 등 불필요한 말 없이 본문만)\n출력 형식: 텔레그램 메시지용이므로 마크다운 테이블(|---|) 사용 금지. 목록이나 줄바꿈으로 표현할 것.\n\n`;
 
 function ensureSessionsDir(dir) {
   if (!fs.existsSync(dir)) {
@@ -89,7 +89,8 @@ function formatPromptForClaude(messages, newUserMessage) {
   return lines.join('');
 }
 
-const CLAUDE_TIMEOUT_MS = 120 * 1000; // 120초
+// 환경변수 CLAUDE_TIMEOUT_SEC 없으면 300초(5분). 예: CLAUDE_TIMEOUT_SEC=600 npm run log mini004
+const CLAUDE_TIMEOUT_MS = (Number(process.env.CLAUDE_TIMEOUT_SEC) || 300) * 1000;
 
 function runClaude(messages, newUserMessage) {
   const prompt = formatPromptForClaude(messages, newUserMessage);
