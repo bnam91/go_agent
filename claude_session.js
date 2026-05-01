@@ -89,8 +89,8 @@ function formatPromptForClaude(messages, newUserMessage) {
   return lines.join('');
 }
 
-// 환경변수 CLAUDE_TIMEOUT_SEC 없으면 300초(5분). 예: CLAUDE_TIMEOUT_SEC=600 npm run log mini004
-const CLAUDE_TIMEOUT_MS = (Number(process.env.CLAUDE_TIMEOUT_SEC) || 300) * 1000;
+// 환경변수 CLAUDE_TIMEOUT_SEC 없으면 900초(15분). 예: CLAUDE_TIMEOUT_SEC=600 npm run log mini004
+const CLAUDE_TIMEOUT_MS = (Number(process.env.CLAUDE_TIMEOUT_SEC) || 900) * 1000;
 
 function runClaude(messages, newUserMessage) {
   const prompt = formatPromptForClaude(messages, newUserMessage);

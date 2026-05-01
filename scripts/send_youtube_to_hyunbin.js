@@ -1,5 +1,5 @@
 /**
- * 매일 아침 8시 - 지수에게 유튜브 24h 업로드 영상 전송
+ * 매일 아침 8시 - 현빈에게 유튜브 24h 업로드 영상 전송
  * Windows 작업 스케줄러에서 실행
  */
 
@@ -9,14 +9,14 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 
-const LOG_FILE = path.join(os.homedir(), 'Desktop', 'youtube_jisu_debug.log');
+const LOG_FILE = path.join(os.homedir(), 'Desktop', 'youtube_hyunbin_debug.log');
 function log(msg) {
   const line = `[${new Date().toISOString()}] ${msg}\n`;
   fs.appendFileSync(LOG_FILE, line, 'utf-8');
 }
 
 const BOT_TOKEN = '7849782487:AAEp6gwgun05PAH3Q7VSFbZ4D9-f4gga_qo';
-const CHAT_ID = '8406936211'; // 지수
+const CHAT_ID = '6942656480'; // 현빈
 
 const SCRIPT_PATH = path.join(os.homedir(), 'Documents', 'github_skills', 'go-finder', 'scripts', 'indicator_day.js');
 
@@ -62,7 +62,10 @@ async function sendInChunks(text) {
 }
 
 log('스크립트 시작');
-execFile('node', [SCRIPT_PATH], { timeout: 120000 }, async (err, stdout, stderr) => {
+execFile('node', [SCRIPT_PATH], {
+  timeout: 120000,
+  env: { ...process.env, SHEET_SPREADSHEET_ID: '1gJ1BzMIviX7Sp69OvKsEnVJDVfFkURovMBPAvonV2ys', SHEET_NAME: 'list' },
+}, async (err, stdout, stderr) => {
   if (err) {
     log(`execFile 오류: ${err.message}`);
     if (stderr) log(`stderr: ${stderr.substring(0, 500)}`);
