@@ -9,10 +9,8 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 
-const LOG_FILE = path.join(os.homedir(), 'Desktop', 'youtube_hyunbin_debug.log');
 function log(msg) {
-  const line = `[${new Date().toISOString()}] ${msg}\n`;
-  fs.appendFileSync(LOG_FILE, line, 'utf-8');
+  console.error(`[${new Date().toISOString()}] ${msg}`);
 }
 
 const BOT_TOKEN = '7849782487:AAEp6gwgun05PAH3Q7VSFbZ4D9-f4gga_qo';
